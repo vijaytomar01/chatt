@@ -19,7 +19,33 @@ const __dirname = path.dirname(__filename);
 const PORT = ENV.PORT || 3000;
 
 app.use(express.json({ limit: "5mb" })); // req.body
-app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+
+// CORS: allow the configured client URL, but also handle same-origin Render deployments gracefully
+const allowedOrigins = [ENV.CLIENT_URL].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow non-browser requests (no origin), or any explicitly allowed origin
+      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Fallback: in hosted environments like Render, allow the app's own origin
+      try {
+        const url = new URL(origin);
+        if (ENV.CLIENT_URL && new URL(ENV.CLIENT_URL).host === url.host) {
+          return callback(null, true);
+        }
+      } catch {
+        // ignore malformed origins
+      }
+
+      return callback(null, false);
+    },
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
