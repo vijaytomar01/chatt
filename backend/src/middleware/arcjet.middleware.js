@@ -2,6 +2,9 @@ import aj from "../lib/arcjet.js";
 import { isSpoofedBot } from "@arcjet/inspect";
 
 export const arcjetProtection = async (req, res, next) => {
+  // If Arcjet is not configured, skip protection entirely
+  if (!aj) return next();
+
   try {
     const decision = await aj.protect(req);
 
