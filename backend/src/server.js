@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import cors from "cors";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
@@ -26,15 +27,23 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/friends", friendRoutes);
 
 // make ready for deployment
-if (ENV.NODE_ENV === "production") {
+const isProdLike = ENV.NODE_ENV === "production" || Boolean(process.env.RENDER);
+
+if (isProdLike) {
   // backend/src -> backend -> project root -> frontend/dist
   const distPath = path.join(__dirname, "../../frontend/dist");
 
-  app.use(express.static(distPath));
+  if (fs.existsSync(distPath)) {
+    app.use(express.static(distPath));
 
-  app.get("*", (_, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-  });
+    app.get("*", (_, res) => {
+      res.sendFile(path.join(distPath, "index.html"));
+    });
+  } else {
+    console.warn(
+      `Frontend dist not found at ${distPath}. Did you run the frontend build (npm run build)?`
+    );
+  }
 }
 
 server.listen(PORT, () => {
