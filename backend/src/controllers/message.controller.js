@@ -51,6 +51,13 @@ export const sendMessage = async (req, res) => {
       return res.status(404).json({ message: "Receiver not found." });
     }
 
+    // Only allow messages between accepted friends
+    const sender = await User.findById(senderId);
+    const isFriend = sender.friends && sender.friends.some((f) => f.toString() === receiverId.toString());
+    if (!isFriend) {
+      return res.status(403).json({ message: "You can only send messages to accepted friends." });
+    }
+
     let imageUrl;
     if (image) {
       // upload base64 image to cloudinary

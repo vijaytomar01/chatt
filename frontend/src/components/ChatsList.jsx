@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
+import { useThemeStore } from "../store/useThemeStore";
 import UsersLoadingSkeleton from "./UsersLoadingSkeleton";
 import NoChatsFound from "./NoChatsFound";
 import { useAuthStore } from "../store/useAuthStore";
@@ -7,6 +8,8 @@ import { useAuthStore } from "../store/useAuthStore";
 function ChatsList() {
   const { getMyChatPartners, chats, isUsersLoading, setSelectedUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
+  const { getTheme } = useThemeStore();
+  const theme = getTheme();
 
   useEffect(() => {
     getMyChatPartners();
@@ -20,7 +23,7 @@ function ChatsList() {
       {chats.map((chat) => (
         <div
           key={chat._id}
-          className="bg-cyan-500/10 p-4 rounded-lg cursor-pointer hover:bg-cyan-500/20 transition-colors"
+          className={`p-4 rounded-lg cursor-pointer transition-colors ${theme.chatItemBg}`}
           onClick={() => setSelectedUser(chat)}
         >
           <div className="flex items-center gap-3">
@@ -29,7 +32,7 @@ function ChatsList() {
                 <img src={chat.profilePic || "/avatar.png"} alt={chat.fullName} />
               </div>
             </div>
-            <h4 className="text-slate-200 font-medium truncate">{chat.fullName}</h4>
+            <h4 className={`font-medium truncate ${theme.text}`}>{chat.fullName}</h4>
           </div>
         </div>
       ))}
