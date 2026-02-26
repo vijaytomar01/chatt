@@ -9,7 +9,8 @@ export const connectDB = async () => {
     const conn = await mongoose.connect(ENV.MONGO_URI);
     console.log("MONGODB CONNECTED:", conn.connection.host);
   } catch (error) {
-    console.error("Error connection to MONGODB:", error);
-    process.exit(1); // 1 status code means fail, 0 means success
+    console.error("Error connecting to MONGODB:", error);
+    // Do not crash the entire server in hosted environments; app should keep running
+    // and surface database errors per-request instead of returning 502 Bad Gateway.
   }
 };
