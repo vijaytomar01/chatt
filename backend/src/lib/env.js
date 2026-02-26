@@ -4,7 +4,7 @@ export const ENV = {
   PORT: process.env.PORT,
   MONGO_URI: process.env.MONGO_URI,
   JWT_SECRET: process.env.JWT_SECRET,
-  NODE_ENV: process.env.NODE_ENV,
+  NODE_ENV: process.env.NODE_ENV || "development",
   CLIENT_URL: process.env.CLIENT_URL,
   RESEND_API_KEY: process.env.RESEND_API_KEY,
   EMAIL_FROM: process.env.EMAIL_FROM,
@@ -13,5 +13,6 @@ export const ENV = {
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
   ARCJET_KEY: process.env.ARCJET_KEY,
-  ARCJET_ENV: process.env.ARCJET_ENV,
+  // If not explicitly set, mirror NODE_ENV so production deploys don't run Arcjet in dev mode.
+  ARCJET_ENV: process.env.ARCJET_ENV || process.env.NODE_ENV || "development",
 };
